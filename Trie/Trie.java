@@ -81,6 +81,8 @@ public class Trie<T> implements TrieInterface {
                 curr.makeChild(word.charAt(i));
             curr=curr.getChild(word.charAt(i));
         }
+        if (curr.getValue()!=null)
+            return false;
         curr.setValue((T)value);
         return true;
     }

@@ -172,8 +172,9 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
     public void handle_user(String name) {
         System.out.println("Creating user");
         User u=new User(name);
-        allUsers.insert(name,u);
-        userConsumed.add(u);
+        boolean f=allUsers.insert(name,u);
+        if (f)
+            userConsumed.add(u);
 
     }
 
@@ -229,8 +230,9 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
 
     public void timed_handle_user(String name) {
         User u=new User(name);
-        allUsers.insert(name,u);
-        userConsumed.add(u);
+        boolean f=allUsers.insert(name,u);
+        if (f)
+            userConsumed.add(u);
 
     }
 
