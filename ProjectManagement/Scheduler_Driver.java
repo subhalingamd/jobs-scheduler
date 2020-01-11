@@ -624,7 +624,8 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
         //REMOVE (all prints)
 
         int temp_token=0;
-        ArrayList<Wrap<Job>> temp=new ArrayList();
+        //ArrayList<Wrap<Job>> temp=new ArrayList();
+        MaxHeap<Job> temp=new MaxHeap<Job>();
         int time=currTime;
 
         while (!allJobs.isEmpty()){
@@ -649,12 +650,13 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
                     //System.out.println("\tProject: "+jobIn+" budget remaining: "+jobIn.getBudget());                
             }
             else{
-                temp.add(new Wrap<Job>(currJob,temp_token++));
+                //temp.add(new Wrap<Job>(currJob,temp_token++));
+                temp.insert(currJob);
             }
             
         }
-        allJobs=new MaxHeap<Job>(temp);
-    
+        //allJobs=new MaxHeap<Job>(temp);
+        allJobs=temp;
     
 
     }
