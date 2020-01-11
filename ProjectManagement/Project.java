@@ -37,7 +37,6 @@ public class Project implements Comparable<Project>{
     }
 
     public void completeJob(Job job){
-        jobs[0].remove(job);
         jobs[1].add(job);
     }
 

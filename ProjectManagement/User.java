@@ -28,7 +28,6 @@ public class User implements Comparable<User> {
     }
 
     public void completeJob(Job job){
-        jobs[0].remove(job);
         jobs[1].add(job);
     }
 

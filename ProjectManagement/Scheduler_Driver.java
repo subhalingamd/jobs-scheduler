@@ -282,7 +282,7 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
             Job currjob=jobs[0].get(i); 
             if (currjob.getArrTime()>t2)
                 break;
-            else if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2)
+            else if (!currjob.completedStatus()&&currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2)
                 res.add(new JobReport(cmd[1],currjob.getProject().toString(),currjob.getRuntime(),currjob.getArrTime(),currjob.getCompTime()));
         }
 
@@ -337,7 +337,7 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
                 Job currjob=jobs_user[0].get(i); 
                 if (currjob.getArrTime()>t2)
                     break;
-                else if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2&&currjob.getProject().toString().equals(cmd[1]))
+                else if (!currjob.completedStatus()&&currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2&&currjob.getProject().toString().equals(cmd[1]))
                     res.add(new JobReport(cmd[2],cmd[1],currjob.getRuntime(),currjob.getArrTime(),currjob.getCompTime()));
             }
         }
@@ -347,7 +347,7 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
                 Job currjob=jobs_proj[0].get(i); 
                 if (currjob.getArrTime()>t2)
                     break;
-                else if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2&&currjob.getUser().toString().equals(cmd[2]))
+                else if (!currjob.completedStatus()&&currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2&&currjob.getUser().toString().equals(cmd[2]))
                     res.add(new JobReport(cmd[2],cmd[1],currjob.getRuntime(),currjob.getArrTime(),currjob.getCompTime()));
             }
         }
@@ -384,7 +384,7 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
             Job currjob=jobs[0].get(i); 
             if (currjob.getArrTime()>t2)
                 break;
-            else if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2)
+            else if (!currjob.completedStatus()&&currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2)
                 res.add(new JobReport(currjob.getUser().toString(),cmd[1],currjob.getRuntime(),currjob.getArrTime(),currjob.getCompTime()));
         }
 
@@ -428,7 +428,8 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
             int size=jobs.size();
             for (int i=0;i<size;i++){
                 Job j=jobs.get(i);
-                res.add(new JobReport(j.getUser().toString(),p.toString(),j.getRuntime(),j.getArrTime(),j.getCompTime()));
+                if (!j.completedStatus())
+                    res.add(new JobReport(j.getUser().toString(),p.toString(),j.getRuntime(),j.getArrTime(),j.getCompTime()));
             }
             q.add(p);
         }
@@ -688,8 +689,6 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
     
 
 }
-
-
 
 
 

@@ -111,7 +111,7 @@ public class Scheduler_Grader_Large {
     static void execute() throws IOException {
 
         String[] cmd;
-        Integer MAX_QUERIES = 500;
+        Integer MAX_QUERIES = 1001;
 
         /**
          * Users creation

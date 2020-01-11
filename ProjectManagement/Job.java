@@ -30,9 +30,6 @@ public class Job implements Comparable<Job> {
 		return priority;
 	}
 
-	public void changePriority(int p){
-		priority=p;
-	}
 
 	public Project getProject(){
 		return project;
