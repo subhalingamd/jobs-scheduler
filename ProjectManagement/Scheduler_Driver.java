@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.List;
 
+
 public class Scheduler_Driver extends Thread implements SchedulerInterface {
 
     private Trie<Project> allProjects = new Trie();
@@ -35,8 +36,9 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
     private PriorityListUsers userConsumed = new PriorityListUsers(); 
     //private PriorityListProjects projectsPriority = new PriorityListProjects(); REMOVE
 
+    boolean f_us=false,f_pj=false;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException { 
 //
 
         Scheduler_Driver scheduler_driver = new Scheduler_Driver();
@@ -256,6 +258,7 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
     }
 
 
+
     private ArrayList<JobReport_> handle_new_user(String[] cmd) {
         //REMOVE
         //System.out.println("User query");
@@ -271,9 +274,9 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
         int i,size=jobs[1].size();
         for (i=0;i<size;i++){
             Job currjob=jobs[1].get(i);
-            //if (currjob.getArrTime()>t2)
-            //    break;
-            if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2)
+            if (currjob.getArrTime()>t2)
+                break;
+            else if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2)
                 res.add(new JobReport(cmd[1],currjob.getProject().toString(),currjob.getRuntime(),currjob.getArrTime(),currjob.getCompTime()));
             
         }
@@ -314,9 +317,9 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
             int i,size=jobs_user[1].size();
             for (i=0;i<size;i++){
                 Job currjob=jobs_user[1].get(i);
-                //if (currjob.getArrTime()>t2)
-                //    break;
-                if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2&&currjob.getProject().toString().equals(cmd[1]))
+                if (currjob.getArrTime()>t2)
+                    break;
+                else if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2&&currjob.getProject().toString().equals(cmd[1]))
                     res.add(new JobReport(cmd[2],cmd[1],currjob.getRuntime(),currjob.getArrTime(),currjob.getCompTime()));
             }
         }
@@ -324,9 +327,9 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
             int i,size=jobs_proj[1].size();
             for (i=0;i<size;i++){
                 Job currjob=jobs_proj[1].get(i); 
-                //if (currjob.getArrTime()>t2)
-                //    break;
-                if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2&&currjob.getUser().toString().equals(cmd[2]))
+                if (currjob.getArrTime()>t2)
+                    break;
+                else if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2&&currjob.getUser().toString().equals(cmd[2]))
                     res.add(new JobReport(cmd[2],cmd[1],currjob.getRuntime(),currjob.getArrTime(),currjob.getCompTime()));
             }
         }
@@ -374,9 +377,9 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
         int i,size=jobs[1].size();
         for (i=0;i<size;i++){
             Job currjob=jobs[1].get(i); 
-            //if (currjob.getArrTime()>t2)
-            //    break;
-            if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2)
+            if (currjob.getArrTime()>t2)
+                break;
+            else if (currjob.getArrTime()>=t1&&currjob.getArrTime()<=t2)
                 res.add(new JobReport(currjob.getUser().toString(),cmd[1],currjob.getRuntime(),currjob.getArrTime(),currjob.getCompTime()));
         }
         size=jobs[0].size();
@@ -416,7 +419,7 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
         //TAKE CARE OF PRIORITY OF PROJECTS
         //REMOVE
         //System.out.println("Priority query");
-        ArrayList<Project> q=new ArrayList<Project>();
+        Queue<Project> q=new LinkedList<Project>();
         ArrayList<JobReport_> res=new ArrayList();
         while (!projectsPriority.isEmpty()){
             Project p=projectsPriority.extractMax();
@@ -433,18 +436,9 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
             }
             q.add(p);
         }
-
-        int si=q.size();
-        for (int x=0;x<si;x++){
-            projectsPriority.insert(q.get(x));
-        }
-
-
-        /*
         while (!q.isEmpty()){
             projectsPriority.insert(q.remove());
         }
-        */
 
         
         //REMOVE THIS
@@ -594,8 +588,14 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
             }
             System.out.println("\tExecuting: "+currJob+" from: "+currJob.getProject());
             Project jobIn = currJob.getProject();
+            //ADDED
+            if (f_us)
+                currJob.getUser().bulkCompleteJobs();
+            if (f_pj)
+                jobIn.bulkCompleteJobs();
             pendingJob--;
             if (jobIn.getBudget()>=currJob.getRuntime()){
+
                 completedJobs.add(currJob);
                 currTime+=currJob.getRuntime();
                 currJob.flagCompleted();
@@ -621,8 +621,7 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
         //SOME STATS can be pushed to some other functions to reduce time...
         //REMOVE (all prints)
 
-        int temp_token=0;
-        ArrayList<Wrap<Job>> temp=new ArrayList();
+        MaxHeap<Job> temp=new MaxHeap();
         int time=currTime;
 
         while (!allJobs.isEmpty()){
@@ -642,17 +641,22 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
                     jobIn.addBudget(0-currJob.getRuntime());
                     currJob.getUser().addBudget(currJob.getRuntime());
                     userConsumed.update(currJob.getUser());
-                    currJob.getUser().completeJob(currJob);
-                    jobIn.completeJob(currJob);
+                    //currJob.getUser().completeJob(currJob);
+                    //jobIn.completeJob(currJob);
+                    //ADDED
+                    currJob.getUser().addIntermediate(currJob);
+                    f_us=true;
+                    jobIn.addIntermediate(currJob);
+                    f_pj=true;
+
                     //System.out.println("\tProject: "+jobIn+" budget remaining: "+jobIn.getBudget());                
             }
             else{
-                temp.add(new Wrap<Job>(currJob,temp_token++));
+                temp.insert(currJob);
             }
             
         }
-        allJobs=new MaxHeap<Job>(temp);
-    
+        allJobs=temp;
     
 
     }
@@ -689,6 +693,8 @@ public class Scheduler_Driver extends Thread implements SchedulerInterface {
     
 
 }
+
+
 
 
 
@@ -745,18 +751,26 @@ class PriorityListUsers{
         }
         arr.set(i+1,obj);
     }
+    
     /*
-
+    //CHECK / VERIFY
     public void updateBulk(ArrayList<User> objs){
-        int index=arr.indexOf(obj),budget=obj.getBudget();
-        int i=index-1;
-        while (i>=0&&budget>arr.get(i).getBudget()){
-            arr.set(i+1,arr.get(i));
-            i--;
+        int size=objs.size();
+        for (int x=0;x<size;x++){
+            User obj=objs.get(i);
+            int index=arr.indexOf(obj),budget=obj.getBudget();
+            int i=index-1;
+            while (i>=0&&budget>arr.get(i).getBudget()){
+                arr.set(i+1,arr.get(i));
+                i--;
+            }
+            arr.set(i+1,obj);
         }
-        arr.set(i+1,obj);
+
+        
     }
-*/
+    */
+
     public ArrayList<User> get(){
         return arr;
     }

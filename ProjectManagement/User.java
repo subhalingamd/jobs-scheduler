@@ -6,6 +6,8 @@ public class User implements Comparable<User> {
 	String name;
     int budget;
     ArrayList<Job>[] jobs; 
+    ArrayList<Job> intermediate;
+
 
 	public User(String name){
 		this.name=name;
@@ -28,11 +30,31 @@ public class User implements Comparable<User> {
     }
 
     public void completeJob(Job job){
+        jobs[0].remove(job);
         jobs[1].add(job);
     }
 
     public ArrayList<Job>[] getJobs(){
         return jobs;
+    }
+
+    //CHECK
+    public void addIntermediate(Job j){
+        intermediate.add(j);
+        jobs[1].add(j);
+    }
+
+    //CHECK
+    public void bulkCompleteJobs(){
+        if (intermediate.size()<=0)
+            return;
+        int size=intermediate.size();
+        
+        for (int i=0;i<size;i++){
+            jobs[0].remove(intermediate.get(i));
+        }
+        intermediate=new ArrayList();
+
     }
 
     @Override

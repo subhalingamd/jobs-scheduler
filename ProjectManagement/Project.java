@@ -8,6 +8,7 @@ public class Project implements Comparable<Project>{
 	int priority,budget;
     ArrayList<Job>[] jobs; 
     int id;
+    ArrayList<Job> intermediate;
 
 
 	public Project(String name,int priority,int budget, int id){
@@ -18,6 +19,7 @@ public class Project implements Comparable<Project>{
         jobs[0]=new ArrayList<Job>();
         jobs[1]=new ArrayList<Job>();
         id=this.id;
+        intermediate=new ArrayList();
 	}
 
 	public void addBudget(int append){
@@ -37,7 +39,28 @@ public class Project implements Comparable<Project>{
     }
 
     public void completeJob(Job job){
+        jobs[0].remove(job);
         jobs[1].add(job);
+    }
+
+
+    //CHECK
+    public void addIntermediate(Job j){
+    	intermediate.add(j);
+    	jobs[1].add(j);
+    }
+
+    //CHECK
+    public void bulkCompleteJobs(){
+    	if (intermediate.size()==0)
+            return;
+    	int size=intermediate.size();
+    	
+    	for (int i=0;i<size;i++){
+    		jobs[0].remove(intermediate.get(i));
+    	}
+    	intermediate=new ArrayList();
+
     }
 
     public ArrayList<Job>[] getJobs(){

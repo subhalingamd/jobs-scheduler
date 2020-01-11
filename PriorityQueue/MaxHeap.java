@@ -3,22 +3,28 @@ package PriorityQueue;
 import java.util.ArrayList;
 
 public class MaxHeap<T extends Comparable> implements PriorityQueueInterface<T> {
+	private class Wrap<T extends Comparable> implements Comparable<Wrap<T>>{
+		T el;
+		int stamp;
 
-	ArrayList<Wrap<T>> arr;
-	int ct; 
-	int token;
+		public Wrap(T el,int stamp){
+			this.el=el;
+			this.stamp=stamp;
+		}
 
-    public MaxHeap(){
-        arr=new ArrayList();
-        ct=0; 
-        token=0;
-    }
-
-    public MaxHeap (ArrayList<Wrap<T>> arr){
-        this.arr=arr;
-        ct=arr.size();
-        token=arr.size();
-    }
+        @Override
+        public int compareTo(Wrap<T> W){
+            if (this.el.compareTo(W.el)!=0)
+                return this.el.compareTo(W.el);
+            if (this.stamp<W.stamp)
+                return 1;
+            else
+                return -1;
+        }
+	}
+	ArrayList<Wrap<T>> arr=new ArrayList();
+	int ct=0; 
+	int token=0;
 
     @Override
     public void insert(T element) {
